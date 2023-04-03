@@ -6,7 +6,7 @@
     <script>
         settings<?php echo md5($params['id']); ?> = <?php echo json_encode(getVueSliderData($params['id']), JSON_PRETTY_PRINT); ?>;
     </script>
-    
+
     <script type="importmap">
       { "imports": {
           "vue":               "https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.41/vue.esm-browser.prod.js",
@@ -18,6 +18,24 @@
     <script type="module">
         import { createApp } from 'vue'
         createApp({
+            methods: {
+                nextSlide() {
+                    const currentSlideIndex = this.images.indexOf(this.currentSlideImage);
+                    if (currentSlideIndex === this.images.length - 1) {
+                        this.currentSlideImage = this.images[0];
+                    } else {
+                        this.currentSlideImage = this.images[currentSlideIndex + 1];
+                    }
+                },
+                previousSlide() {
+                    const currentSlideIndex = this.images.indexOf(this.currentSlideImage);
+                    if (currentSlideIndex === 0) {
+                        this.currentSlideImage = this.images[this.images.length - 1];
+                    } else {
+                        this.currentSlideImage = this.images[currentSlideIndex - 1];
+                    }
+                }
+            },
             mounted() {
                 const settings = settings<?php echo md5($params['id']); ?>;
                 this.images = settings.images;
@@ -38,8 +56,8 @@
                <div class="vue-slider-item" :style="{ backgroundImage: 'url(' + currentSlideImage + ')' }"></div>
            </div>
            <div class="btn btn-group">
-               <button type="button" class="btn btn-primary">Previous Slide</button>
-               <button type="button" class="btn btn-primary">Next Slide</button>
+               <button type="button" v-on:click="previousSlide" class="btn btn-primary">Previous Slide</button>
+               <button type="button" v-on:click="nextSlide" class="btn btn-primary">Next Slide</button>
            </div>
        </div>
     </div>
