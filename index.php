@@ -1,8 +1,8 @@
 
 <link href="<?php echo module_url();?>css/style.css" type="text/css" rel="stylesheet" >
+<link href="//cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" type="text/css" rel="stylesheet"/>
 
-<div style="padding-top:20px;padding-bottom:20px">
-
+<div>
     <script>
         settings<?php echo md5($params['id']); ?> = <?php echo json_encode(getVueSliderData($params['id']), JSON_PRETTY_PRINT); ?>;
     </script>
@@ -20,44 +20,55 @@
         createApp({
             methods: {
                 nextSlide() {
-                    const currentSlideIndex = this.images.indexOf(this.currentSlideImage);
-                    if (currentSlideIndex === this.images.length - 1) {
-                        this.currentSlideImage = this.images[0];
+                    const currentSlideIndex = this.slides.indexOf(this.currentSlide);
+                    if (currentSlideIndex === this.slides.length - 1) {
+                        this.currentSlide = this.slides[0];
                     } else {
-                        this.currentSlideImage = this.images[currentSlideIndex + 1];
+                        this.currentSlide = this.slides[currentSlideIndex + 1];
                     }
                 },
                 previousSlide() {
-                    const currentSlideIndex = this.images.indexOf(this.currentSlideImage);
+                    const currentSlideIndex = this.slides.indexOf(this.currentSlide);
                     if (currentSlideIndex === 0) {
-                        this.currentSlideImage = this.images[this.images.length - 1];
+                        this.currentSlide = this.slides[this.slides.length - 1];
                     } else {
-                        this.currentSlideImage = this.images[currentSlideIndex - 1];
+                        this.currentSlide = this.slides[currentSlideIndex - 1];
                     }
                 }
             },
             mounted() {
                 const settings = settings<?php echo md5($params['id']); ?>;
-                this.images = settings.images;
-                this.currentSlideImage = settings.images[0];
+                this.slides = settings.slides;
+
+                this.nextSlide();
+                let inst = this;
+                setInterval(function () {
+                    inst.nextSlide();
+                }, 5000);
             },
             data() {
                 return {
-                    images: [],
-                    currentSlideImage: ''
+                    slides: [],
+                    currentSlide: false
                 }
             }
         }).mount('#<?php echo $params['id']; ?>')
     </script>
 
     <div id="<?php echo $params['id']; ?>">
-       <div class="container">
+       <div>
            <div class="vue-slider">
-               <div class="vue-slider-item" :style="{ backgroundImage: 'url(' + currentSlideImage + ')' }"></div>
-           </div>
-           <div class="btn btn-group">
-               <button type="button" v-on:click="previousSlide" class="btn btn-primary">Previous Slide</button>
-               <button type="button" v-on:click="nextSlide" class="btn btn-primary">Next Slide</button>
+
+               <div class="vue-slider-item" :style="{ backgroundImage: 'url(' + currentSlide + ')' }"></div>
+
+               <div class="vue-slider-buttons">
+                   <button type="button" v-on:click="previousSlide" class="vue-slider-button-prev">
+                       Previous Slide
+                   </button>
+                   <button type="button" v-on:click="nextSlide" class="vue-slider-button-next">
+                       Next Slide
+                   </button>
+               </div>
            </div>
        </div>
     </div>
